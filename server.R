@@ -47,7 +47,7 @@ server <- function(input, output, session) {
                       choices = sort(unique(data()$filiere)))
   })
   
-  # Vue d'ensemble
+  # Vue d'ensemble 
   output$summary_table <- renderDataTable({
     data() %>%
       group_by(region) %>%
