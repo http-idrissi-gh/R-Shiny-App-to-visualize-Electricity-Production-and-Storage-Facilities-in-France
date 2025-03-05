@@ -412,7 +412,7 @@ server <- function(input, output, session) {
       rename(
         "Filière" = filiere,
         "Technologie" = technologie,
-        "Renouvelable" = Renouvelable,w
+        "Renouvelable" = Renouvelable,
         "Région" = region,
         "Département" = departement,
         "Commune" = commune,
