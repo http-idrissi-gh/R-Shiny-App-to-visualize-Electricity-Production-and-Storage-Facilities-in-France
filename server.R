@@ -1,5 +1,6 @@
 library(shiny)
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(leaflet)
 library(DT)
@@ -35,8 +36,6 @@ server <- function(input, output, session) {
         annee = year(dateMiseEnService),
         Renouvelable = ifelse(filiere %in% c("Solaire", "Hydraulique", "Eolien", "Bioénergies", "Energies Marines", "Géothermie"),
                               "Oui", "Non"))
-    View(df)
-    print(unique(df$filiere))
     return(df)
   })
   
@@ -87,87 +86,6 @@ server <- function(input, output, session) {
            fill = "Énergie Renouvelable") +
       theme_minimal() +
       theme(text = element_text(size = 12))
-  })
-  
-  # Analyse Temporelle
-  output$temporal_plot <- renderPlot({
-    if(input$time_var == "count") {
-      data() %>%
-        count(annee, Renouvelable) %>%
-        ggplot(aes(x = annee, y = n, color = Renouvelable)) +
-        geom_line() +
-        geom_point() +
-        scale_color_manual(values = c("Oui" = "#2ECC71", "Non" = "#E74C3C")) +
-        labs(x = "Année",
-             y = "Nombre d'installations",
-             color = "Énergie Renouvelable") +
-        theme_minimal()
-    } else {
-      data() %>%
-        group_by(annee, Renouvelable) %>%
-        summarise(total_power = sum(puissance, na.rm = TRUE) / 1000, .groups = 'drop') %>%
-        ggplot(aes(x = annee, y = total_power, color = Renouvelable)) +
-        geom_line() +
-        geom_point() +
-        scale_color_manual(values = c("Oui" = "#2ECC71", "Non" = "#E74C3C")) +
-        labs(x = "Année",
-             y = "Puissance totale installée (MW)",
-             color = "Énergie Renouvelable") +
-        theme_minimal()
-    }
-  })
-  
-  # Analyse Catégorielle 
-  output$categorical_plot <- renderPlot({
-    var <- input$cat_var
-    
-    if(var == "filiere") {
-      data() %>%
-        group_by(filiere, technologie, Renouvelable) %>%
-        summarise(count = n(), .groups = 'drop') %>%
-        ggplot(aes(x = reorder(technologie, count), y = count, fill = Renouvelable)) +
-        geom_bar(stat = "identity") +
-        scale_fill_manual(values = c("Oui" = "#2ECC71", "Non" = "#E74C3C")) +
-        coord_flip() +
-        labs(x = "Technologie",
-             y = "Nombre d'Installations",
-             fill = "Énergie Renouvelable") +
-        theme_minimal() +
-        theme(legend.position = "bottom")
-    } else if(var == "tension") {
-      data() %>%
-        group_by(tensionRaccordement, Renouvelable) %>%
-        summarise(
-          puissance_totale = sum(puissance, na.rm = TRUE) / 1000,
-          nombre = n(),
-          .groups = 'drop'
-        ) %>%
-        ggplot(aes(x = reorder(tensionRaccordement, puissance_totale), 
-                   y = puissance_totale, fill = Renouvelable)) +
-        geom_bar(stat = "identity") +
-        scale_fill_manual(values = c("Oui" = "#2ECC71", "Non" = "#E74C3C")) +
-        coord_flip() +
-        labs(x = "Tension de Raccordement",
-             y = "Puissance Totale (MW)",
-             fill = "Énergie Renouvelable") +
-        theme_minimal()
-    } else {
-      data() %>%
-        group_by(region, Renouvelable) %>%
-        summarise(
-          puissance_totale = sum(puissance, na.rm = TRUE) / 1000,
-          nombre = n(),
-          .groups = 'drop'
-        ) %>%
-        ggplot(aes(x = reorder(region, puissance_totale), y = puissance_totale, fill = Renouvelable)) +
-        geom_bar(stat = "identity") +
-        scale_fill_manual(values = c("Oui" = "#2ECC71", "Non" = "#E74C3C")) +
-        coord_flip() +
-        labs(x = "Région",
-             y = "Puissance Totale (MW)",
-             fill = "Énergie Renouvelable") +
-        theme_minimal()
-    }
   })
   
   # Charger les données géographiques des départements français
@@ -229,37 +147,10 @@ server <- function(input, output, session) {
                                  0)
       )
     
-    # Densité d'installations renouvelables
-    dept_data_densite <- data() %>%
-      group_by(departement, Renouvelable) %>%
-      summarise(
-        nombre = n(),
-        puissance = sum(puissance, na.rm = TRUE) / 1000,
-        .groups = 'drop'
-      ) %>%
-      pivot_wider(
-        id_cols = departement,
-        names_from = Renouvelable,
-        values_from = c(nombre, puissance),
-        values_fill = list(nombre = 0, puissance = 0)
-      ) %>%
-      rename(
-        nombre_renouvelable = `nombre_Oui`,
-        nombre_non_renouvelable = `nombre_Non`,
-        puissance_renouvelable = `puissance_Oui`,
-        puissance_non_renouvelable = `puissance_Non`
-      ) %>%
-      mutate(
-        nombre_total = nombre_renouvelable + nombre_non_renouvelable,
-        puissance_totale = puissance_renouvelable + puissance_non_renouvelable,
-        densite_installations = nombre_renouvelable / nombre_total * 100,
-        densite_puissance = puissance_renouvelable / puissance_totale * 100
-      )
     
     # Joindre les données temporelles avec les autres données
     dept_data_complete <- dept_data %>%
-      left_join(dept_data_temporal, by = "departement") %>%
-      left_join(dept_data_densite, by = "departement")
+      left_join(dept_data_temporal, by = "departement")
     
     # Joindre avec les données géographiques
     france_deps() %>%
@@ -275,6 +166,9 @@ server <- function(input, output, session) {
     # Définir les palettes de couleurs selon le type de visualisation
     if (visualization_type == "progression_cop21") {
       # Palette pour la progression vers l'objectif COP21
+      values_vector <- map_data$progression
+      values_vector[is.na(values_vector)] <- 0  # Remplacer NA par 0
+      
       pal <- colorNumeric(
         palette = colorRampPalette(c("#E74C3C", "#F39C12", "#2ECC71"))(100),
         domain = c(0, 100),
@@ -282,47 +176,27 @@ server <- function(input, output, session) {
       )
       
       legend_title <- "Progression vers l'objectif COP21 (%)"
-      values <- ~progression
-      popup_content <- ~paste(
-        "<b>Département:</b>", nom, "<br>",
+      popup_content <- paste(
+        "<b>Département:</b>", map_data$nom, "<br>",
         "<b>Puissance Totale:</b>", 
-        ifelse(is.na(puissance_totale), "0", round(puissance_totale, 1)), "MW<br>",
+        ifelse(is.na(map_data$puissance_totale), "0", round(map_data$puissance_totale, 1)), "MW<br>",
         "<b>Puissance Renouvelable:</b>", 
-        ifelse(is.na(puissance_renouvelable), "0", round(puissance_renouvelable, 1)), "MW<br>",
+        ifelse(is.na(map_data$puissance_renouvelable), "0", round(map_data$puissance_renouvelable, 1)), "MW<br>",
         "<b>% Renouvelable:</b>", 
-        ifelse(is.na(pourcentage_renouvelable), "0", round(pourcentage_renouvelable, 1)), "%<br>",
+        ifelse(is.na(map_data$pourcentage_renouvelable), "0", round(map_data$pourcentage_renouvelable, 1)), "%<br>",
         "<b>Objectif COP21 (40%):</b>", 
-        ifelse(objectif_atteint == "Oui", "Atteint ✓", paste("En progression (", round(progression, 1), "%)")),
+        ifelse(map_data$objectif_atteint == "Oui", "Atteint ✓", 
+               paste("En progression (", round(map_data$progression, 1), "%)")),
         "<br>",
         "<b>Nombre d'installations:</b>", 
-        ifelse(is.na(nombre_total), "0", nombre_total)
-      )
-      
-    } else if (visualization_type == "densite_renouvelable") {
-      # Palette pour la densité d'installations renouvelables
-      pal <- colorNumeric(
-        palette = "Blues",
-        domain = c(0, 100),
-        na.color = "#CCCCCC"
-      )
-      
-      legend_title <- "Densité d'installations renouvelables (%)"
-      values <- ~densite_installations
-      popup_content <- ~paste(
-        "<b>Département:</b>", nom, "<br>",
-        "<b>Installations renouvelables:</b>", 
-        ifelse(is.na(nombre_renouvelable), "0", nombre_renouvelable), 
-        " (", ifelse(is.na(densite_installations), "0", round(densite_installations, 1)), "%)<br>",
-        "<b>Installations totales:</b>", 
-        ifelse(is.na(nombre_total), "0", nombre_total), "<br>",
-        "<b>Puissance renouvelable:</b>", 
-        ifelse(is.na(puissance_renouvelable), "0", round(puissance_renouvelable, 1)), "MW<br>",
-        "<b>Puissance totale:</b>", 
-        ifelse(is.na(puissance_totale), "0", round(puissance_totale, 1)), "MW"
+        ifelse(is.na(map_data$nombre_total), "0", map_data$nombre_total)
       )
       
     } else if (visualization_type == "evolution_paris") {
       # Palette pour l'évolution depuis l'Accord de Paris
+      values_vector <- map_data$taux_transition
+      values_vector[is.na(values_vector)] <- 0  # Remplacer NA par 0
+      
       pal <- colorNumeric(
         palette = "RdYlGn",
         domain = c(0, 100),
@@ -330,18 +204,17 @@ server <- function(input, output, session) {
       )
       
       legend_title <- paste("% d'énergies renouvelables dans les nouvelles installations (2015-", selected_year, ")", sep="")
-      values <- ~taux_transition
-      popup_content <- ~paste(
-        "<b>Département:</b>", nom, "<br>",
+      popup_content <- paste(
+        "<b>Département:</b>", map_data$nom, "<br>",
         "<b>Nouvelles installations (2015-", selected_year, "):</b> ", 
-        ifelse(is.na(installations_post_cop21), "0", installations_post_cop21), "<br>",
+        ifelse(is.na(map_data$installations_post_cop21), "0", map_data$installations_post_cop21), "<br>",
         "<b>Dont renouvelables:</b> ", 
-        ifelse(is.na(installations_renouvelables_post_cop21), "0", installations_renouvelables_post_cop21), 
-        " (", ifelse(is.na(pourcentage_renouvelable_post_cop21), "0", round(pourcentage_renouvelable_post_cop21, 1)), "%)<br>",
+        ifelse(is.na(map_data$installations_renouvelables_post_cop21), "0", map_data$installations_renouvelables_post_cop21), 
+        " (", ifelse(is.na(map_data$pourcentage_renouvelable_post_cop21), "0", round(map_data$pourcentage_renouvelable_post_cop21, 1)), "%)<br>",
         "<b>Nouvelle puissance renouvelable:</b> ", 
-        ifelse(is.na(puissance_renouvelable_post_cop21), "0", round(puissance_renouvelable_post_cop21, 1)), " MW<br>",
+        ifelse(is.na(map_data$puissance_renouvelable_post_cop21), "0", round(map_data$puissance_renouvelable_post_cop21, 1)), " MW<br>",
         "<b>Nouvelle puissance totale:</b> ", 
-        ifelse(is.na(puissance_post_cop21), "0", round(puissance_post_cop21, 1)), " MW"
+        ifelse(is.na(map_data$puissance_post_cop21), "0", round(map_data$puissance_post_cop21, 1)), " MW"
       )
     }
     
@@ -350,7 +223,7 @@ server <- function(input, output, session) {
       addTiles() %>%
       setView(lng = 2.5, lat = 46.5, zoom = 5.1) %>%
       addPolygons(
-        fillColor = ~pal(values),
+        fillColor = ~pal(values_vector),
         weight = 1,
         opacity = 1,
         color = "white",
@@ -366,7 +239,7 @@ server <- function(input, output, session) {
       addLegend(
         position = "bottomright",
         pal = pal,
-        values = values,
+        values = values_vector,
         title = legend_title,
         labFormat = labelFormat(suffix = "%")
       )
