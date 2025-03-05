@@ -5,7 +5,9 @@ library(leaflet)
 library(DT)
 
 ui <- dashboardPage(
-  dashboardHeader(title = "Analyse des Installations Électriques en France"),
+  
+  dashboardHeader(title = "Analyse des Installations \n
+                          Électriques en France"),
   
   dashboardSidebar(
     sidebarMenu(
@@ -93,11 +95,14 @@ ui <- dashboardPage(
             status = "primary",
             solidHeader = TRUE,
             width = 12,
-            selectInput("map_color", "Colorer par:",
+            selectInput("map_visualization", "Type de visualisation:",
                         choices = c(
-                          "Filière" = "filiere",
-                          "Tension" = "tensionRaccordement"
+                          "Progression vers l'objectif COP21" = "progression_cop21",
+                          "Évolution temporelle depuis l'Accord de Paris" = "evolution_paris"
                         )),
+            sliderInput("map_year_filter", "Année de référence:",
+                        min = 2015, max = 2023, value = 2023, step = 1,
+                        animate = TRUE),
             leafletOutput("map", height = 600)
           )
         )
