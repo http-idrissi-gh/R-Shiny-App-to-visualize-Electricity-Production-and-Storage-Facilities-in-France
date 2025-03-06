@@ -76,25 +76,26 @@ ui <- dashboardPage(
         )
       ),
       
-      # Analyse par Filière
-      tabItem(
-        tabName = "categorical",
-        fluidRow(
-          box(
-            title = "Analyse par Catégorie",
-            status = "success",
-            solidHeader = TRUE,
-            width = 12,
-            selectInput("cat_var", "Variable à analyser:",
-                        choices = c(
-                          "Filière" = "filiere",
-                          "Région" = "region",
-                          "Tension de Raccordement" = "tension"
-                        )),
-            plotOutput("categorical_plot")
-          )
-        )
-      ),
+  # Analyse par Filière
+  tabItem(
+    tabName = "categorical",
+    fluidRow(
+      box(
+        title = "Analyse par Catégorie",
+        status = "success",
+        solidHeader = TRUE,
+        width = 12,
+        selectInput("cat_var",
+                    "Variable à analyser:",
+                    choices = c(
+                      "Région" = "region",
+                      "Tension de Raccordement" = "tension",
+                      "Installations" = "technologie"
+                    )),
+        amChartsOutput("categorical_plot")
+      )
+    )
+  ),
       
       # Analyse Géographique
       tabItem(
