@@ -1,3 +1,4 @@
+# server.R
 library(shiny)
 library(dplyr)
 library(tidyr)
@@ -8,6 +9,8 @@ library(stringr)
 library(scales)
 library(lubridate)
 library(sf)
+library(plotly)
+library(rAmCharts)
 
 server <- function(input, output, session) {
   
@@ -55,37 +58,89 @@ server <- function(input, output, session) {
         `Nombre d'Installations` = n(),
         `Puissance Totale (MW)` = sum(puissance, na.rm = TRUE) / 1000,
         `Puissance Moyenne (kW)` = mean(puissance, na.rm = TRUE),
-        `Pourcentage Renouvelable (%)` = sum(ifelse(Renouvelable == "Oui", puissance, 0), na.rm = TRUE) / 
+        `Pourcentage Renouvelable ` = sum(ifelse(Renouvelable == "Oui", puissance, 0), na.rm = TRUE) /
           sum(puissance, na.rm = TRUE) * 100
       ) %>%
       arrange(desc(`Puissance Totale (MW)`))
   }, options = list(pageLength = 5))
   
-  output$power_dist <- renderPlot({
-    ggplot(data(), aes(x = puissance, fill = Renouvelable)) +
-      geom_histogram(bins = 50, position = "stack") +
-      scale_x_log10(labels = scales::comma) +
-      scale_fill_manual(values = c("Oui" = "#2ECC71", "Non" = "#E74C3C")) +
-      labs(x = "Puissance Installée (kW) - Échelle logarithmique",
-           y = "Nombre d'Installations",
-           fill = "Énergie Renouvelable") +
-      theme_minimal() +
-      theme(text = element_text(size = 12))
+  output$type_reg <- renderAmCharts({
+    var <- input$var_an
+    count_data <- data() %>%
+      group_by(!!sym(var)) %>%
+      count()
+    
+    total_n <- sum(count_data$n)
+    
+    count_data <- count_data %>%
+      mutate(proportion = n / total_n)
+    am_data <- data.frame(
+      label  = count_data[[var]],
+      value = count_data$proportion,
+      n = count_data$n
+    )
+    amPie(
+      data = am_data,
+      balloonText = "Pourcentage: [[percents]]%, soit [[n]] instalations",
+      fontSize = 9,
+      radius = "30%",
+      labelRadius = 1,
+      marginTop = 110,
+      creditsPosition = "bottom-right"
+    )
   })
-  
-  output$type_dist <- renderPlot({
-    data() %>%
+  output$type_dist <- renderAmCharts({
+    data_bar <- data() %>%
       group_by(filiere, Renouvelable) %>%
       summarise(total_power = sum(puissance, na.rm = TRUE) / 1000, .groups = 'drop') %>%
-      ggplot(aes(x = reorder(filiere, total_power), y = total_power, fill = Renouvelable)) +
-      geom_bar(stat = "identity") +
-      scale_fill_manual(values = c("Oui" = "#2ECC71", "Non" = "#E74C3C")) +
-      coord_flip() +
-      labs(x = "Filière",
-           y = "Puissance Totale (MW)",
-           fill = "Énergie Renouvelable") +
-      theme_minimal() +
-      theme(text = element_text(size = 12))
+      arrange(desc(total_power))
+    
+    
+    pipeR::pipeline(            
+      amBarplot(
+        x = "filiere",
+        y = "total_power",
+        data = data_bar,
+        horiz = TRUE,
+        labelRotation = -45,  
+        ylab = "Puissance Totale (MW)",  
+        xlab = "Filière",
+        creditsPosition = "bottom-right"
+      ),
+      setChartCursor()
+    )
+  })
+  
+  
+  #Analyse temporelle
+  
+  output$temporal_plot <- renderPlotly({
+    if (input$time_var == "count") {
+      df <- data() %>%
+        count(annee, Renouvelable) %>%
+        mutate(Renouvelable = factor(Renouvelable, levels = c("Oui", "Non")))  
+      plot_ly(df, x = ~annee, y = ~n, color = ~Renouvelable,
+              colors = c("Oui" = "#2ECC71", "Non" = "#E74C3C"),  
+              type = 'scatter', mode = 'lines+markers') %>%
+        layout(title = "Évolution des Installations",
+               xaxis = list(title = "Année"),
+               yaxis = list(title = "Nombre d'installations"),
+               legend = list(title = list(text = "Énergie Renouvelable")))
+      
+    } else {
+      df <- data() %>%
+        group_by(annee, Renouvelable) %>%
+        summarise(total_power = sum(puissance, na.rm = TRUE) / 1000, .groups = 'drop') %>%
+        mutate(Renouvelable = factor(Renouvelable, levels = c("Oui", "Non")))  
+      
+      plot_ly(df, x = ~annee, y = ~total_power, color = ~Renouvelable,
+              colors = c("Oui" = "#2ECC71", "Non" = "#E74C3C"),  
+              type = 'scatter', mode = 'lines+markers') %>%
+        layout(title = "Puissance Cumulée des Installations",
+               xaxis = list(title = "Année"),
+               yaxis = list(title = "Puissance totale installée (MW)"),
+               legend = list(title = list(text = "Énergie Renouvelable")))
+    }
   })
   
   # Charger les données géographiques des départements français
