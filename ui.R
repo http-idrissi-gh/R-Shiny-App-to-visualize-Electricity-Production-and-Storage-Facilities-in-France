@@ -3,19 +3,22 @@ library(shiny)
 library(shinydashboard)
 library(leaflet)
 library(DT)
+library(plotly)
 
 ui <- dashboardPage(
   
-  dashboardHeader(title = "Analyse des Installations \n
-                          Électriques en France"),
+  skin = "green",
+  
+  dashboardHeader(title = "Analyse des Installations Électriques en France",
+                  titleWidth = 451),
   
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Vue d'ensemble", tabName = "overview", icon = icon("dashboard")),
-      menuItem("Analyse Temporelle", tabName = "numerical", icon = icon("chart-line")),
-      menuItem("Analyse par Filière", tabName = "categorical", icon = icon("chart-bar")),
-      menuItem("Analyse Géographique", tabName = "geographical", icon = icon("map")),
-      menuItem("Exploration Personnalisée", tabName = "custom", icon = icon("search"))
+      menuItem("  Vue d'ensemble", tabName = "overview", icon = icon("dashboard")),
+      menuItem("  Analyse Temporelle", tabName = "numerical", icon = icon("chart-line")),
+      menuItem("  Analyse par Filière", tabName = "categorical", icon = icon("chart-bar")),
+      menuItem("  Analyse Géographique", tabName = "geographical", icon = icon("map")),
+      menuItem("  Exploration Personnalisée", tabName = "custom", icon = icon("search"))
     )
   ),
   
@@ -26,26 +29,33 @@ ui <- dashboardPage(
         tabName = "overview",
         fluidRow(
           box(
-            title = "Statistiques Générales",
-            status = "primary",
-            solidHeader = TRUE,
-            width = 12,
-            dataTableOutput("summary_table")
-          )
-        ),
-        fluidRow(
-          box(
-            title = "Distribution de la Puissance Installée",
-            status = "primary",
-            plotOutput("power_dist")
-          ),
-          box(
-            title = "Répartition par Filière",
-            status = "primary",
-            plotOutput("type_dist")
-          )
+          title = "Statistiques Générales",
+          status = "success",
+          solidHeader = TRUE,
+          width = 12,
+          dataTableOutput("summary_table")
         )
       ),
+      fluidRow(
+        box(
+        title = "Distribution des instalations en France",
+        status = "success",
+        selectInput("var_an",
+                    "Filtre",
+                    choices = c(
+                      "Installation par filière" = "filiere",
+                      "Installation par energie renouvelable" = "Renouvelable"
+                    )
+        ),
+        amChartsOutput("type_reg")
+       ),
+      box(
+      title = "Répartition de la production électrique par filière",
+      status = "success",
+      amChartsOutput("type_dist")
+      )
+    )
+  ),
       
       # Analyse Temporelle
       tabItem(
@@ -53,7 +63,7 @@ ui <- dashboardPage(
         fluidRow(
           box(
             title = "Évolution Temporelle",
-            status = "primary",
+            status = "success",
             solidHeader = TRUE,
             width = 12,
             selectInput("time_var", "Type d'analyse:",
@@ -61,7 +71,7 @@ ui <- dashboardPage(
                           "Installations par date" = "count",
                           "Puissance cumulée" = "power"
                         )),
-            plotOutput("temporal_plot")
+            plotlyOutput("temporal_plot")  
           )
         )
       ),
@@ -72,7 +82,7 @@ ui <- dashboardPage(
         fluidRow(
           box(
             title = "Analyse par Catégorie",
-            status = "primary",
+            status = "success",
             solidHeader = TRUE,
             width = 12,
             selectInput("cat_var", "Variable à analyser:",
@@ -92,7 +102,7 @@ ui <- dashboardPage(
         fluidRow(
           box(
             title = "Carte des Installations",
-            status = "primary",
+            status = "success",
             solidHeader = TRUE,
             width = 12,
             selectInput("map_visualization", "Type de visualisation:",
@@ -114,7 +124,7 @@ ui <- dashboardPage(
         fluidRow(
           box(
             title = "Filtres",
-            status = "primary",
+            status = "success",
             solidHeader = TRUE,
             width = 3,
             selectInput("region_filter", "Région:",
@@ -128,7 +138,7 @@ ui <- dashboardPage(
           ),
           box(
             title = "Résultats",
-            status = "primary",
+            status = "success",
             solidHeader = TRUE,
             width = 9,
             plotOutput("custom_plot"),
