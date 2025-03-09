@@ -131,64 +131,79 @@ server <- function(input, output, session) {
     }
   })
   
-  # Analyse par filière_______________________________________________________
+  # Analyse Catégorielle
   output$categorical_plot <- renderAmCharts({
     var <- input$cat_var
     if(var == "tension") {
       data_bar <- data() %>%
         group_by(tensionRaccordement) %>%
         summarise(
-          puissance_totale_r = sum(puissance[Renouvelable == "Renouvlable"], na.rm = TRUE) / 1000,
-          puissance_totale_nr = sum(puissance[Renouvelable == "Non Renouvlable"], na.rm = TRUE) / 1000,
+          puissance_totale_r = sum(puissance[Renouvelable == "Renouvelable"], na.rm = TRUE) / 1000,
+          puissance_totale_nr = sum(puissance[Renouvelable == "Non renouvelable"], na.rm = TRUE) / 1000,
           .groups = 'drop'
         ) %>%
         arrange(desc(puissance_totale_r + puissance_totale_nr))
       
-      pipeR::pipeline(
-        amBarplot(x = "tensionRaccordement",
-                  y = c("puissance_totale_r", "puissance_totale_nr"),
-                  data = data_bar, horiz = TRUE, stack_type = "regular",
-                  groups_color = c("#2ECC71", "#E74C3C"),
-                  main = "Puissance electrique en fonction de la tension de raccordement",
-                  xlab = "Tension de Raccordement", ylab = "Puissance Totale (MW)",
-                  legend = TRUE, creditsPosition = "bottom-right"),
-        setChartCursor())
+      colnames(data_bar)[colnames(data_bar) == "puissance_totale_r"] <- "Renouvelable"
+      colnames(data_bar)[colnames(data_bar) == "puissance_totale_nr"] <- "Non renouvelable"
+      
+      amBarplot(x = "tensionRaccordement",
+                y = c("Renouvelable", "Non renouvelable"),
+                valueNames = c("Renouvelable", "Non renouvelable"),
+                data = data_bar,
+                horiz = TRUE,
+                stack_type = "regular",
+                groups_color = c("#2ECC71", "#E74C3C"),
+                xlab = "Tension de Raccordement",
+                ylab = "Puissance Totale (MW)",
+                legend = TRUE,
+                 creditsPosition = "bottom-right")
     } else if(var == "region") {
       data_bar <- data() %>%
         group_by(region) %>%
         summarise(
-          puissance_totale_r = sum(puissance[Renouvelable == "Renouvlable"], na.rm = TRUE) / 1000,
-          puissance_totale_nr = sum(puissance[Renouvelable == "Non Renouvlable"], na.rm = TRUE) / 1000,
+          puissance_totale_r = sum(puissance[Renouvelable == "Renouvelable"], na.rm = TRUE) / 1000,
+          puissance_totale_nr = sum(puissance[Renouvelable == "Non renouvelable"], na.rm = TRUE) / 1000,
           .groups = 'drop'
         ) %>%
-        arrange(desc(puissance_totale_r + puissance_totale_nr))
+        arrange(desc(puissance_totale_r + puissance_totale_nr))  
       
-      pipeR::pipeline(
-        amBarplot(x = "region", y = c("puissance_totale_r", "puissance_totale_nr"),
-                  groups_color = c("#2ECC71", "#E74C3C"), data = data_bar,
-                  horiz = TRUE, xlab = "Région", ylab = "Puissance Totale (MW)",
-                  creditsPosition = "bottom-right", stack_type = "regular",
-                  main = "Puissance électrique par région", legend = TRUE, fontSize = 10),
-        setChartCursor()
-      )
+      colnames(data_bar)[colnames(data_bar) == "puissance_totale_r"] <- "Renouvelable"
+      colnames(data_bar)[colnames(data_bar) == "puissance_totale_nr"] <- "Non renouvelable"
+      
+      amBarplot(x = "region",
+                y = c("Renouvelable", "Non renouvelable"),
+                data = data_bar,
+                horiz = TRUE,
+                stack_type = "regular",
+                xlab = "Région",
+                ylab = "Puissance (MV)",
+                groups_color = c("#2ECC71", "#E74C3C"),
+                creditsPosition = "bottom-right",
+                legend = TRUE)
     } else {
       data_bar <- data() %>%
         group_by(region) %>%
         summarise(
-          n_r = sum(Renouvelable == "Renouvlable", na.rm = TRUE),
-          n_nr = sum(Renouvelable == "Non Renouvlable", na.rm = TRUE),
+          n_r = sum(Renouvelable == "Renouvelable", na.rm = TRUE),
+          n_nr = sum(Renouvelable == "Non renouvelable", na.rm = TRUE),
           .groups = 'drop'
         ) %>%
         arrange(desc(n_r + n_nr))
       
-      pipeR::pipeline(
-        amBarplot(x = "region", y = c("n_r", "n_nr"),
-                  groups_color = c("#2ECC71", "#E74C3C"), data = data_bar,
-                  horiz = TRUE, xlab = "Région", ylab = "Nombre d'installations",
-                  creditsPosition = "bottom-right", stack_type = "regular",
-                  main = "Nombres d'installations par région", legend = TRUE),
-        setChartCursor()
-      )
+      colnames(data_bar)[colnames(data_bar) == "n_r"] <- "Renouvelable"
+      colnames(data_bar)[colnames(data_bar) == "n_nr"] <- "Non renouvelable"
+
+      amBarplot(x = "region",
+                y = c("Renouvelable", "Non renouvelable"),
+                groups_color = c("#2ECC71", "#E74C3C"),
+                data = data_bar,
+                horiz = TRUE,
+                xlab = "Région",
+                ylab = "Nombre d'installations",
+                creditsPosition = "bottom-right",
+                stack_type = "regular",
+                legend = TRUE)
     }
   })
   
