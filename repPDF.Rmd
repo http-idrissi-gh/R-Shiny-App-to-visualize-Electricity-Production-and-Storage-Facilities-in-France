@@ -40,7 +40,7 @@ La richesse de ces données (plus de 100 000 lignes) permet une analyse approfon
 
 # II - Présentation de l'application
 
-Notre application Shiny d'analyse des installations électriques en France est accessible à l'adresse suivante :
+Notre application Shiny d'analyse des installations électriques en France est accessible à l'adresse suivante : https://idrissi-ghalmi.shinyapps.io/projet-Rshiny/
 
 L'interface a été conçue pour être intuitive et informative, divisée en cinq sections principales, chacune offrant une perspective unique sur les données.
 
