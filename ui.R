@@ -57,26 +57,7 @@ ui <- dashboardPage(
       )
     )
   ),
-      
-      # Analyse Temporelle
-      tabItem(
-        tabName = "numerical",
-        fluidRow(
-          box(
-            title = "Évolution Temporelle",
-            status = "success",
-            solidHeader = TRUE,
-            width = 12,
-            selectInput("time_var", "Type d'analyse:",
-                        choices = c(
-                          "Installations par date" = "count",
-                          "Puissance cumulée" = "power"
-                        )),
-            plotlyOutput("temporal_plot")  
-          )
-        )
-      ),
-      
+        
   # Analyse par Filière
   tabItem(
     tabName = "categorical",
@@ -97,28 +78,25 @@ ui <- dashboardPage(
       )
     )
   ),
-      
-      # Analyse Géographique
+      # Analyse Temporelle
       tabItem(
-        tabName = "geographical",
+        tabName = "numerical",
         fluidRow(
           box(
-            title = "Carte des Installations",
+            title = "Évolution Temporelle",
             status = "success",
             solidHeader = TRUE,
             width = 12,
-            selectInput("map_visualization", "Type de visualisation:",
+            selectInput("time_var", "Type d'analyse:",
                         choices = c(
-                          "Progression vers l'objectif COP21" = "progression_cop21",
-                          "Évolution temporelle depuis l'Accord de Paris" = "evolution_paris"
+                          "Installations par date" = "count",
+                          "Puissance cumulée" = "power"
                         )),
-            sliderInput("map_year_filter", "Année de référence:",
-                        min = 2015, max = 2023, value = 2023, step = 1,
-                        animate = TRUE),
-            leafletOutput("map", height = 600)
+            plotlyOutput("temporal_plot")  
           )
         )
       ),
+    
       
       # Exploration Personnalisée
       tabItem(
@@ -145,6 +123,27 @@ ui <- dashboardPage(
             width = 9,
             plotOutput("custom_plot"),
             dataTableOutput("filtered_data")
+          )
+        )
+      ),
+      # Analyse Géographique
+      tabItem(
+        tabName = "geographical",
+        fluidRow(
+          box(
+            title = "Carte des Installations",
+            status = "success",
+            solidHeader = TRUE,
+            width = 12,
+            selectInput("map_visualization", "Type de visualisation:",
+                        choices = c(
+                          "Progression vers l'objectif COP21" = "progression_cop21",
+                          "Évolution temporelle depuis l'Accord de Paris" = "evolution_paris"
+                        )),
+            sliderInput("map_year_filter", "Année de référence:",
+                        min = 2015, max = 2023, value = 2023, step = 1,
+                        animate = TRUE),
+            leafletOutput("map", height = 600)
           )
         )
       )
