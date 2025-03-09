@@ -1,4 +1,4 @@
-# serveur.R
+# server.R
 library(shiny)
 library(dplyr)
 library(tidyr)
@@ -86,7 +86,6 @@ server <- function(input, output, session) {
       summarise(total_power = sum(puissance, na.rm = TRUE) / 1000, .groups = 'drop') %>%
       arrange(desc(total_power))
     
-    
     pipeR::pipeline(            
       amBarplot(
         x = "filiere",
@@ -100,36 +99,6 @@ server <- function(input, output, session) {
       ),
       setChartCursor()
     )
-  })
-  
-  # Analyse Tempo_______________________________________________________
-  output$temporal_plot <- renderPlotly({
-    if (input$time_var == "count") {
-      df <- data() %>%
-        count(annee, Renouvelable) %>%
-        mutate(Renouvelable = factor(Renouvelable, levels = c("Renouvelable", "Non renouvelable")))
-      
-      plot_ly(df, x = ~annee, y = ~n, color = ~Renouvelable,
-              colors = c("Renouvelable" = "#2ECC71", "Non renouvelable" = "#E74C3C"),
-              type = 'scatter', mode = 'lines+markers') %>%
-        layout(title = "Évolution des Installations",
-               xaxis = list(title = "Année"),
-               yaxis = list(title = "Nombre d'installations"),
-               legend = list(title = list(text = "Type d'énergie")))
-    } else {
-      df <- data() %>%
-        group_by(annee, Renouvelable) %>%
-        summarise(total_power = sum(puissance, na.rm = TRUE) / 1000, .groups = 'drop') %>%
-        mutate(Renouvelable = factor(Renouvelable, levels = c("Renouvelable", "Non renouvelable")))
-      
-      plot_ly(df, x = ~annee, y = ~total_power, color = ~Renouvelable,
-              colors = c("Renouvelable" = "#2ECC71", "Non renouvelable" = "#E74C3C"),
-              type = 'scatter', mode = 'lines+markers') %>%
-        layout(title = "Puissance Cumulée des Installations",
-               xaxis = list(title = "Année"),
-               yaxis = list(title = "Puissance totale installée (MW)"),
-               legend = list(title = list(text = "Énergie Renouvelable")))
-    }
   })
   
   # Analyse Catégorielle_______________________________________________________
@@ -205,6 +174,36 @@ server <- function(input, output, session) {
                 creditsPosition = "bottom-right",
                 stack_type = "regular",
                 legend = TRUE)
+    }
+  })
+  
+  # Analyse Tempo_______________________________________________________
+  output$temporal_plot <- renderPlotly({
+    if (input$time_var == "count") {
+      df <- data() %>%
+        count(annee, Renouvelable) %>%
+        mutate(Renouvelable = factor(Renouvelable, levels = c("Renouvelable", "Non renouvelable")))
+      
+      plot_ly(df, x = ~annee, y = ~n, color = ~Renouvelable,
+              colors = c("Renouvelable" = "#2ECC71", "Non renouvelable" = "#E74C3C"),
+              type = 'scatter', mode = 'lines+markers') %>%
+        layout(title = "Évolution des Installations",
+               xaxis = list(title = "Année"),
+               yaxis = list(title = "Nombre d'installations"),
+               legend = list(title = list(text = "Type d'énergie")))
+    } else {
+      df <- data() %>%
+        group_by(annee, Renouvelable) %>%
+        summarise(total_power = sum(puissance, na.rm = TRUE) / 1000, .groups = 'drop') %>%
+        mutate(Renouvelable = factor(Renouvelable, levels = c("Renouvelable", "Non renouvelable")))
+      
+      plot_ly(df, x = ~annee, y = ~total_power, color = ~Renouvelable,
+              colors = c("Renouvelable" = "#2ECC71", "Non renouvelable" = "#E74C3C"),
+              type = 'scatter', mode = 'lines+markers') %>%
+        layout(title = "Puissance Cumulée des Installations",
+               xaxis = list(title = "Année"),
+               yaxis = list(title = "Puissance totale installée (MW)"),
+               legend = list(title = list(text = "Énergie Renouvelable")))
     }
   })
   
