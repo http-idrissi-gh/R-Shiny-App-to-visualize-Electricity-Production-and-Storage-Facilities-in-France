@@ -1,0 +1,97 @@
+---
+title: "Bilan de France 8 ans après l’Accord de Paris"
+authors: "DIAKITE Youssouf - JANSSENS Théo - IDRISSI GHALMI Mohamed"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# I- Introduction
+
+### i) Objectifs de la France en matière de transition énergétique:
+
+La France s'est engagée dans une ambitieuse transition énergétique, alignée avec les objectifs européens et internationaux de lutte contre le changement climatique. Parmi ces engagements figurent :
+
+-   **Objectif COP21 (Accord de Paris, 2015)** : Atteindre 40% d'énergies renouvelables dans le mix électrique français d'ici 2028 (<https://bigmedia.bpifrance.fr/news/40-de-notre-production-delectricite-sera-issue-des-energies-renouvelables-avant-2030>).
+-   **Stratégie Nationale Bas-Carbone** : Atteindre la neutralité carbone d'ici 2050.
+
+Ces objectifs nécessitent un suivi rigoureux du développement des installations électriques, particulièrement concernant les énergies renouvelables, dont l'intégration au réseau constitue un défi majeur.
+
+### ii)Motivations du projet d'analyse:
+
+Face à ces défis, notre application Shiny vise à :
+
+1.  **Visualiser l'état actuel** des installations électriques à travers la France
+2.  **Mesurer les progrès** réalisés depuis l'Accord de Paris (COP21)
+3.  **Identifier les disparités régionales** dans le déploiement des installations renouvelables
+4.  **Analyser les tendances temporelles** pour anticiper les évolutions futures
+5.  **Offrir un outil d'aide à la décision** pour les acteurs publics et privés du secteur énergétique
+
+### iii)Source des données:
+
+Les données utilisées proviennent du Registre National des Installations de Production et de Stockage d'Électricité, accessible via la plateforme [data.gouv.fr](https://explore.data.gouv.fr/fr/). Ce registre, régulièrement mis à jour, contient des informations détaillées sur chaque installation :
+
+-   Localisation (commune, département, région)
+-   Date de mise en service
+-   Caractéristiques techniques (tension de raccordement, filière, technologie)
+-   Puissance installée
+
+La richesse de ces données (plus de 100 000 lignes) permet une analyse approfondie du paysage électrique français et de son évolution.
+
+# II - Présentation de l'application
+
+Notre application Shiny d'analyse des installations électriques en France est accessible à l'adresse suivante :
+
+L'interface a été conçue pour être intuitive et informative, divisée en cinq sections principales, chacune offrant une perspective unique sur les données.
+
+### i) Vue d'ensemble:
+
+Cette section présente un aperçu global du paysage électrique français à travers :
+
+-   **Tableau des statistiques générales** : Affiche pour chaque région le nombre d'installations, la puissance totale (MW), la puissance moyenne (kW) et le pourcentage d'énergies renouvelables.
+-   **Distribution des installations** : Graphique circulaire permettant de visualiser la répartition des installations par filière ou par type d'énergie (renouvelable ou non).
+-   **Répartition de la production électrique** : Graphique à barres horizontales montrant la puissance installée par filière.
+
+**Pertinence** : Cette vue permet d'identifier rapidement les régions les plus avancées dans la transition énergétique et de comprendre la structure actuelle du parc électrique français. Elle sert de point de référence pour mesurer la progression vers l'objectif de 40% d'énergies renouvelables.
+
+### ii) Analyse temporelle:
+
+Cette section examine l'évolution des installations électriques au fil du temps avec deux analyses principales :
+
+-   **Évolution du nombre d'installations** : Graphique linéaire montrant l'augmentation annuelle du nombre d'installations, différenciant les énergies renouvelables des non-renouvelables.
+-   **Évolution de la puissance cumulée** : Graphique linéaire illustrant la progression de la puissance totale installée (MW), avec distinction entre sources renouvelables et non-renouvelables.
+
+**Pertinence** : L'analyse temporelle permet d'évaluer l'accélération du déploiement des énergies renouvelables depuis l'Accord de Paris (2015) et d'identifier les périodes clés dans la transition énergétique française. Elle aide à projeter les tendances futures et à estimer le temps nécessaire pour atteindre les objectifs fixés.
+
+### iii) Analyse par filière:
+
+Cette section approfondit la répartition des installations selon différentes variables catégorielles :
+
+-   **Analyse par région** : Visualisation de la puissance électrique par région, avec distinction entre sources renouvelables et non-renouvelables.
+-   **Analyse par tension de raccordement** : Répartition de la puissance selon le niveau de tension, révélant la structure du réseau électrique et son adaptation aux différentes technologies.
+-   **Analyse par technologie** : Distribution des installations par type de technologie.
+
+**Pertinence** : Cette analyse permet d'identifier les filières les plus dynamiques et de comprendre comment les différentes technologies contribuent aux objectifs nationaux. Elle révèle également les disparités régionales dans le développement des énergies renouvelables, aidant à cibler les régions nécessitant des politiques de soutien plus importantes.
+
+### iv) Analyse géographique:
+
+Cette section propose une visualisation cartographique interactive des installations électriques en France :
+
+-   **Progression vers l'objectif COP21** : Carte choroplèthe montrant, par département, le pourcentage de progression vers l'objectif de 40% d'énergies renouvelables.
+-   **Évolution temporelle depuis l'Accord de Paris** : Visualisation dynamique (via un curseur temporel) de l'évolution du taux d'énergies renouvelables depuis 2015.
+
+**Pertinence** : La dimension géographique est essentielle pour comprendre les disparités territoriales dans la transition énergétique. Cette section permet d'identifier les départements en avance ou en retard, d'analyser l'impact des politiques régionales, et de visualiser la propagation des installations renouvelables à travers le territoire national.
+
+### v) Exploration personnalisée:
+
+Cette section offre une interface flexible permettant aux utilisateurs de créer leurs propres analyses :
+
+-   **Filtres multiples** : Sélection par région, filière, et plage de puissance.
+-   **Visualisation interactive** : Graphique de dispersion des installations selon leur date de mise en service et leur puissance.
+-   **Tableau de données filtré** : Accès aux données brutes correspondant aux critères sélectionnés.
+
+**Pertinence** : L'exploration personnalisée permet aux décideurs et analystes d'approfondir des questions spécifiques, de tester des hypothèses, et de découvrir des modèles ou tendances qui pourraient ne pas être apparents dans les visualisations prédéfinies. Cette flexibilité est cruciale pour adapter l'analyse aux besoins particuliers des différentes parties prenantes.
+
+# III- Conclusion
+
+Notre application Shiny d'analyse des installations électriques en France offre un outil complet pour suivre, analyser et comprendre la progression de l'hexagonne vers ses objectifs de transition énergétique. En combinant ces analyses statistiques, temporelles, catégorielles et géographiques, elle permet d'obtenir une vision globale et détaillée du paysage électrique français.
