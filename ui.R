@@ -4,6 +4,7 @@ library(shinydashboard)
 library(leaflet)
 library(DT)
 library(plotly)
+library(rAmCharts)
 
 ui <- dashboardPage(
   
