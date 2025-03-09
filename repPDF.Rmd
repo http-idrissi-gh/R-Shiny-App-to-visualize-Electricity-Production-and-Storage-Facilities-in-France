@@ -8,7 +8,7 @@ output:
 
 # I- Introduction
 
-### 1 ) Objectifs de la France en matière de transition énergétique:
+### 1) Objectifs de la France en matière de transition énergétique:
 
 La France s'est engagée dans une ambitieuse transition énergétique, alignée avec les objectifs européens et internationaux de lutte contre le changement climatique. Parmi ces engagements figurent :
 
@@ -17,7 +17,7 @@ La France s'est engagée dans une ambitieuse transition énergétique, alignée 
 
 Ces objectifs nécessitent un suivi rigoureux du développement des installations électriques, particulièrement concernant les énergies renouvelables, dont l'intégration au réseau constitue un défi majeur.
 
-### 2 )Motivations du projet d'analyse:
+### 2) Motivations du projet d'analyse:
 
 Face à ces défis, notre application Shiny vise à :
 
@@ -27,7 +27,7 @@ Face à ces défis, notre application Shiny vise à :
 4.  **Analyser les tendances temporelles** pour anticiper les évolutions futures
 5.  **Offrir un outil d'aide à la décision** pour les acteurs publics et privés du secteur énergétique
 
-### 3 )Source des données:
+### 3) Source des données:
 
 Les données utilisées proviennent du Registre National des Installations de Production et de Stockage d'Électricité, accessible via la plateforme [data.gouv.fr](https://explore.data.gouv.fr/fr/). Ce registre, régulièrement mis à jour, contient des informations détaillées sur chaque installation :
 
@@ -44,7 +44,7 @@ Notre application Shiny d'analyse des installations électriques en France est a
 
 L'interface a été conçue pour être intuitive et informative, divisée en cinq sections principales, chacune offrant une perspective unique sur les données.
 
-### 1 ) Vue d'ensemble:
+### 1) Vue d'ensemble:
 
 Cette section présente un aperçu global du paysage électrique français à travers :
 
@@ -54,8 +54,7 @@ Cette section présente un aperçu global du paysage électrique français à tr
 
 **Pertinence** : Cette vue permet d'identifier rapidement les régions les plus avancées dans la transition énergétique et de comprendre la structure actuelle du parc électrique français. Elle sert de point de référence pour mesurer la progression vers l'objectif de 40% d'énergies renouvelables.
 
-
-### 2 ) Analyse par filière:
+### 2) Analyse par filière:
 
 Cette section approfondit la répartition des installations selon différentes variables catégorielles :
 
@@ -65,7 +64,7 @@ Cette section approfondit la répartition des installations selon différentes v
 
 **Pertinence** : Cette analyse permet d'identifier les filières les plus dynamiques et de comprendre comment les différentes technologies contribuent aux objectifs nationaux. Elle révèle également les disparités régionales dans le développement des énergies renouvelables, aidant à cibler les régions nécessitant des politiques de soutien plus importantes.
 
-### 3 ) Analyse temporelle:
+### 3) Analyse temporelle:
 
 Cette section examine l'évolution des installations électriques au fil du temps avec deux analyses principales :
 
@@ -74,7 +73,7 @@ Cette section examine l'évolution des installations électriques au fil du temp
 
 **Pertinence** : L'analyse temporelle permet d'évaluer l'accélération du déploiement des énergies renouvelables depuis l'Accord de Paris (2015) et d'identifier les périodes clés dans la transition énergétique française. Elle aide à projeter les tendances futures et à estimer le temps nécessaire pour atteindre les objectifs fixés.
 
-### 4 ) Exploration personnalisée:
+### 4) Exploration personnalisée:
 
 Cette section offre une interface flexible permettant aux utilisateurs de créer leurs propres analyses :
 
@@ -84,7 +83,7 @@ Cette section offre une interface flexible permettant aux utilisateurs de créer
 
 **Pertinence** : L'exploration personnalisée permet aux décideurs et analystes d'approfondir des questions spécifiques, de tester des hypothèses, et de découvrir des modèles ou tendances qui pourraient ne pas être apparents dans les visualisations prédéfinies. Cette flexibilité est cruciale pour adapter l'analyse aux besoins particuliers des différentes parties prenantes.
 
-### 5 ) Analyse géographique:
+### 5) Analyse géographique:
 
 Cette section propose une visualisation cartographique interactive des installations électriques en France :
 
@@ -92,8 +91,6 @@ Cette section propose une visualisation cartographique interactive des installat
 -   **Évolution temporelle depuis l'Accord de Paris** : Visualisation dynamique (via un curseur temporel) de l'évolution du taux d'énergies renouvelables depuis 2015.
 
 **Pertinence** : La dimension géographique est essentielle pour comprendre les disparités territoriales dans la transition énergétique. Cette section permet d'identifier les départements en avance ou en retard, d'analyser l'impact des politiques régionales, et de visualiser la propagation des installations renouvelables à travers le territoire national.
-
-
 
 # III- Conclusion
 
