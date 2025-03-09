@@ -114,7 +114,7 @@ server <- function(input, output, session) {
         layout(title = "Évolution des Installations",
                xaxis = list(title = "Année"),
                yaxis = list(title = "Nombre d'installations"),
-               legend = list(title = list(text = "Énergie Renouvelable")))
+               legend = list(title = list(text = "Type d'énergie")))
     } else {
       df <- data() %>%
         group_by(annee, Renouvelable) %>%
