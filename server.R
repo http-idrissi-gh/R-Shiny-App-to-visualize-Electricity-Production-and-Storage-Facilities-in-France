@@ -30,7 +30,7 @@ server <- function(input, output, session) {
         annee = year(dateMiseEnService),
         Renouvelable = ifelse(filiere %in% c("Solaire", "Hydraulique", "Eolien", 
                                              "Bioénergies", "Energies Marines", "Géothermie"),
-                              "Renouvlable", "Non Renouvlable")
+                              "Renouvelable", "Non renouvelable")
       )
   })
   
@@ -48,7 +48,7 @@ server <- function(input, output, session) {
         `Nombre d'Installations` = n(),
         `Puissance Totale (MW)` = sum(puissance, na.rm = TRUE) / 1000,
         `Puissance Moyenne (kW)` = mean(puissance, na.rm = TRUE),
-        `Pourcentage Renouvelable ` = sum(ifelse(Renouvelable == "Renouvlable", puissance, 0), na.rm = TRUE) /
+        `Pourcentage Renouvelable ` = sum(ifelse(Renouvelable == "Renouvelable", puissance, 0), na.rm = TRUE) /
           sum(puissance, na.rm = TRUE) * 100
       ) %>%
       arrange(desc(`Puissance Totale (MW)`))
@@ -106,10 +106,10 @@ server <- function(input, output, session) {
     if (input$time_var == "count") {
       df <- data() %>%
         count(annee, Renouvelable) %>%
-        mutate(Renouvelable = factor(Renouvelable, levels = c("Renouvlable", "Non Renouvlable")))
+        mutate(Renouvelable = factor(Renouvelable, levels = c("Renouvelable", "Non renouvelable")))
       
       plot_ly(df, x = ~annee, y = ~n, color = ~Renouvelable,
-              colors = c("Renouvlable" = "#2ECC71", "Non Renouvlable" = "#E74C3C"),
+              colors = c("Renouvelable" = "#2ECC71", "Non renouvelable" = "#E74C3C"),
               type = 'scatter', mode = 'lines+markers') %>%
         layout(title = "Évolution des Installations",
                xaxis = list(title = "Année"),
@@ -119,10 +119,10 @@ server <- function(input, output, session) {
       df <- data() %>%
         group_by(annee, Renouvelable) %>%
         summarise(total_power = sum(puissance, na.rm = TRUE) / 1000, .groups = 'drop') %>%
-        mutate(Renouvelable = factor(Renouvelable, levels = c("Renouvlable", "Non Renouvlable")))
+        mutate(Renouvelable = factor(Renouvelable, levels = c("Renouvelable", "Non renouvelable")))
       
       plot_ly(df, x = ~annee, y = ~total_power, color = ~Renouvelable,
-              colors = c("Renouvlable" = "#2ECC71", "Non Renouvlable" = "#E74C3C"),
+              colors = c("Renouvelable" = "#2ECC71", "Non renouvelable" = "#E74C3C"),
               type = 'scatter', mode = 'lines+markers') %>%
         layout(title = "Puissance Cumulée des Installations",
                xaxis = list(title = "Année"),
@@ -131,7 +131,7 @@ server <- function(input, output, session) {
     }
   })
   
-  # Analyse Catégorielle
+  # Analyse Catégorielle_______________________________________________________
   output$categorical_plot <- renderAmCharts({
     var <- input$cat_var
     if(var == "tension") {
@@ -157,7 +157,7 @@ server <- function(input, output, session) {
                 xlab = "Tension de Raccordement",
                 ylab = "Puissance Totale (MW)",
                 legend = TRUE,
-                 creditsPosition = "bottom-right")
+                creditsPosition = "bottom-right")
     } else if(var == "region") {
       data_bar <- data() %>%
         group_by(region) %>%
@@ -193,7 +193,7 @@ server <- function(input, output, session) {
       
       colnames(data_bar)[colnames(data_bar) == "n_r"] <- "Renouvelable"
       colnames(data_bar)[colnames(data_bar) == "n_nr"] <- "Non renouvelable"
-
+      
       amBarplot(x = "region",
                 y = c("Renouvelable", "Non renouvelable"),
                 groups_color = c("#2ECC71", "#E74C3C"),
@@ -219,18 +219,18 @@ server <- function(input, output, session) {
     
     # Préparer la data des départements 
     dept_data <- data() %>%
-      mutate(post_cop21 = ifelse(annee >= 2015, "Renouvlable", "Non Renouvlable")) %>%
+      mutate(post_cop21 = ifelse(annee >= 2015, "Renouvelable", "Non renouvelable")) %>%
       group_by(departement) %>%
       summarise(
         puissance_totale = sum(puissance, na.rm = TRUE) / 1000,
-        puissance_renouvelable = sum(ifelse(Renouvelable == "Renouvlable", puissance, 0), na.rm = TRUE) / 1000,
+        puissance_renouvelable = sum(ifelse(Renouvelable == "Renouvelable", puissance, 0), na.rm = TRUE) / 1000,
         nombre_total = n(),
-        nombre_renouvelable = sum(Renouvelable == "Renouvlable", na.rm = TRUE),
+        nombre_renouvelable = sum(Renouvelable == "Renouvelable", na.rm = TRUE),
         pourcentage_renouvelable = puissance_renouvelable / puissance_totale * 100,
         .groups = 'drop'
       ) %>%
       mutate(
-        objectif_atteint = ifelse(pourcentage_renouvelable >= 40, "Renouvlable", "Non Renouvlable"),
+        objectif_atteint = ifelse(pourcentage_renouvelable >= 40, "Renouvelable", "Non renouvelable"),
         progression = pmin(pourcentage_renouvelable / 40 * 100, 100)
       )
     
@@ -240,15 +240,15 @@ server <- function(input, output, session) {
       group_by(departement) %>%
       summarise(
         puissance_totale_cumul = sum(puissance, na.rm = TRUE) / 1000,
-        puissance_renouvelable_cumul = sum(ifelse(Renouvelable == "Renouvlable", puissance, 0), na.rm = TRUE) / 1000,
+        puissance_renouvelable_cumul = sum(ifelse(Renouvelable == "Renouvelable", puissance, 0), na.rm = TRUE) / 1000,
         puissance_post_cop21 = sum(ifelse(annee >= 2015, puissance, 0), na.rm = TRUE) / 1000,
-        puissance_renouvelable_post_cop21 = sum(ifelse(annee >= 2015 & Renouvelable == "Renouvlable", puissance, 0), na.rm = TRUE) / 1000,
+        puissance_renouvelable_post_cop21 = sum(ifelse(annee >= 2015 & Renouvelable == "Renouvelable", puissance, 0), na.rm = TRUE) / 1000,
         pourcentage_renouvelable_cumul = puissance_renouvelable_cumul / puissance_totale_cumul * 100,
         pourcentage_renouvelable_post_cop21 = ifelse(puissance_post_cop21 > 0, 
                                                      puissance_renouvelable_post_cop21 / puissance_post_cop21 * 100, 
                                                      0),
         installations_post_cop21 = sum(annee >= 2015, na.rm = TRUE),
-        installations_renouvelables_post_cop21 = sum(annee >= 2015 & Renouvelable == "Renouvlable", na.rm = TRUE),
+        installations_renouvelables_post_cop21 = sum(annee >= 2015 & Renouvelable == "Renouvelable", na.rm = TRUE),
         .groups = 'drop'
       ) %>%
       mutate(taux_transition = ifelse(puissance_post_cop21 > 0, pourcentage_renouvelable_post_cop21, 0))
@@ -288,7 +288,7 @@ server <- function(input, output, session) {
         "<b>% Renouvelable:</b>", 
         ifelse(is.na(map_data$pourcentage_renouvelable), "0", round(map_data$pourcentage_renouvelable, 1)), "%<br>",
         "<b>Objectif COP21 (40%):</b>", 
-        ifelse(map_data$objectif_atteint == "Renouvlable", "Atteint ✓", 
+        ifelse(map_data$objectif_atteint == "Renouvelable", "Atteint ✓", 
                paste("En progression (", round(map_data$progression, 1), "%)")),
         "<br>",
         "<b>Nombre d'installations:</b>", 
@@ -356,7 +356,7 @@ server <- function(input, output, session) {
       geom_point(alpha = 0.6) +
       scale_y_log10(labels = scales::comma) +
       scale_color_viridis_d() +
-      scale_shape_manual(values = c("Renouvlable" = 16, "Non Renouvlable" = 4)) +
+      scale_shape_manual(values = c("Renouvelable" = 16, "Non renouvelable" = 4)) +
       labs(x = "Date de mise en service",
            y = "Puissance (kW) - Échelle logarithmique",
            color = "Filière", shape = "Renouvelable") +
