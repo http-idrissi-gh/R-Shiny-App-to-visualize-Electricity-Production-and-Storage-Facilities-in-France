@@ -1,6 +1,6 @@
 ---
 title: "Bilan de la France 8 ans après l’Accord de Paris"
-authors: "DIAKITE Youssouf - JANSSENS Théo - IDRISSI GHALMI Mohamed"
+authors: "DIAKITE Youssouf 22410791- JANSSENS Théo 22410158 - IDRISSI GHALMI Mohamed 22410057"
 output:
   html_document: default
   pdf_document: default
