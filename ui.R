@@ -16,10 +16,10 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("  Vue d'ensemble", tabName = "overview", icon = icon("dashboard")),
-      menuItem("  Analyse Temporelle", tabName = "numerical", icon = icon("chart-line")),
       menuItem("  Analyse par Filière", tabName = "categorical", icon = icon("chart-bar")),
-      menuItem("  Analyse Géographique", tabName = "geographical", icon = icon("map")),
-      menuItem("  Exploration Personnalisée", tabName = "custom", icon = icon("search"))
+      menuItem("  Analyse Temporelle", tabName = "numerical", icon = icon("chart-line")),
+      menuItem("  Exploration Personnalisée", tabName = "custom", icon = icon("search")),
+      menuItem("  Analyse Géographique", tabName = "geographical", icon = icon("map"))
     )
   ),
   
