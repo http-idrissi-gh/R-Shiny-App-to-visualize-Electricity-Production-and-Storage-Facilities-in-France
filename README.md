@@ -2,6 +2,7 @@
 
 This project is an R Shiny application that sees if France has reached its goals set in the 2015's COP21 Paris Climat agreement, by analyzing electricity production and storage installations in France using interactive visualizations, using the open dataset from: https://explore.data.gouv.fr/fr/datasets/5bfcc5a006e3e744e304ccf0/#/resources/c14e5a7d-2ca6-4ad8-bc61-93889d13fc25 , the CSV in this repository latest update was Jan 31, 2025 at 16:07. Feel free to use the latest version if you need to.
 
+To use the app you can visit: https://idrissi-ghalmi.shinyapps.io/projet-Rshiny/ 
 ## Features
 
 The application offers several types of analysis:
