@@ -40,11 +40,6 @@ The application offers several types of analysis:
    shiny::runApp()
    ```
 
-## Project Structure
-
-- `app.R`: Contains the user interface and server logic.
-- `data/`: Contains the datasets used for analysis.
-
 ## Usage
 
 1. Launch the application using the Run App button or using `shiny::runApp()`.
